@@ -108,14 +108,6 @@ The program adds the intentionally incorrect sentence *"RAG makes answers always
 
 This intentionally injects the factual error on every attempt. The program stops after the third evaluation with `MANUAL_REVIEW_REQUIRED`, proving that it cannot loop forever. Run the clean production command again afterwards so your final committed outputs show `SHIP`.
 
-### Choose a different local model
-
-First download it with `ollama pull <model-name>`, then pass it to the app:
-
-```powershell
-.\.venv\Scripts\python.exe -m src.main --topic "Introduction to RAG" --model llama3.2:3b
-```
-
 ## Tests
 
 ```powershell
