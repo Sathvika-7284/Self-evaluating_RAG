@@ -33,22 +33,86 @@ def evaluate_lesson(lesson: str) -> Evaluation:
         "guarantees correct", "eliminates hallucinations", "always retrieves good",
     ]
     forbidden_found = next((claim for claim in forbidden_claims if claim in text), None)
-    accurate = (
+
+    rag_expansion = (
         "retrieval-augmented generation" in text
-        and all(phrase in text for phrase in ("retriev", "prompt", "generat"))
+        or "retrieval augmented generation" in text
+    )
+
+    has_retrieval_step = any(
+        word in text
+        for word in ("retrieve", "retrieval", "retrieves", "retrieved")
+    )
+
+    has_prompt_context_step = (
+        "prompt" in text
+        and any(
+            phrase in text
+            for phrase in (
+                "add",
+                "adds",
+                "added",
+                "adding",
+                "include",
+                "includes",
+                "included",
+                "placed beside",
+                "as context",
+                "providing context",
+            )
+        )
+    )
+
+    has_generation_step = any(
+        word in text
+        for word in ("generate", "generates", "generated", "generation")
+    )
+
+    accurate = (
+        rag_expansion
+        and has_retrieval_step
+        and has_prompt_context_step
+        and has_generation_step
         and not forbidden_found
     )
+
     beginner = len(lesson.split()) >= 300 and any(
-        signal in text for signal in ("plain english", "in other words", "simply", "think of")
+        signal in text
+        for signal in ("plain english", "in other words", "simply", "think of")
     )
-    key_points = all(
+
+    explains_why = any(
         phrase in text
-        for phrase in ("retrieval-augmented generation", "retrieve", "augment", "generate", "why")
+        for phrase in (
+            "why rag matters",
+            "why it matters",
+            "why it helps",
+            "important because",
+            "useful because",
+            "helps because",
+            "benefit",
+            "improve the accuracy",
+            "improving the accuracy",
+            "improve the performance",
+            "improving the performance",
+            "more accurate and relevant",
+        )
     )
+
+    key_points = (
+        rag_expansion
+        and has_retrieval_step
+        and has_prompt_context_step
+        and has_generation_step
+        and explains_why
+    )
+
     example = (
         "## example" in text
-        and any(term in text for term in ("for example", "imagine", "suppose"))
-        and all(phrase in text for phrase in ("question", "retriev", "answer"))
+        and any(term in text for term in ("for example", "imagine", "suppose", "consider"))
+        and any(term in text for term in ("question", "asks", "query"))
+        and has_retrieval_step
+        and any(term in text for term in ("answer", "response"))
     )
 
     jargon_rules = {
