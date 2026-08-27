@@ -119,7 +119,7 @@ First download it with `ollama pull <model-name>`, then pass it to the app:
 ## Tests
 
 ```powershell
-.\.venv\Scripts\python.exe -m pytest -q
+.\.venv\Scripts\python.exe -m pytest -q --basetemp .pytest-tmp
 ```
 
 The tests verify persistent memory and that the evaluator rejects the deliberate false claim.
